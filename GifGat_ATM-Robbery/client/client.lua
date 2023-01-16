@@ -17,7 +17,7 @@ exports['qb-target']:AddTargetModel(atmtargets, {
                         while CurrentCops == nil do
                             Wait(10)
                         end
-                        if CurrentCops >= Config.RequiredPolice then
+                        if CurrentCops <= Config.RequiredPolice then
                             QBCore.Functions.Notify("Not enough police on duty")
                             return
                         end
