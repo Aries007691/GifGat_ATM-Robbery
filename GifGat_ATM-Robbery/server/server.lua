@@ -1,10 +1,9 @@
 local QBCore = exports['qb-core']:GetCoreObject()
-local cash = {}
 
 QBCore.Functions.CreateCallback('gifgat:server:checkcops', function(source, cb, data)
     local amount = 0
     for _, v in pairs(QBCore.Functions.GetQBPlayers()) do
-        if v.PlayerData.job.type == "leo" and v.PlayerData.job.onduty then
+        if v.PlayerData.job.name == "police" and v.PlayerData.job.onduty then
             amount = amount + 1
         end
     end
@@ -23,25 +22,20 @@ end)
 
 QBCore.Functions.CreateCallback("gifgat:weapon_stickybomb", function(source, cb, data)
     local Player = QBCore.Functions.GetPlayer(source)
+    local src = source
     local weapon_stickybomb = nil
     if Player.Functions.GetItemByName("weapon_stickybomb") then
         weapon_stickybomb = true
+        Player.Functions.RemoveItem('weapon_stickybomb', 1)
+        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['weapon_stickybomb'], 'remove')
     else
         weapon_stickybomb = false
     end
     return cb(weapon_stickybomb)
 end)
 
-RegisterNetEvent('gifgat:RemoveBombItem', function()
-	local Player = QBCore.Functions.GetPlayer(source)
 
-	if not Player then return end
-
-	Player.Functions.RemoveItem('weapon_stickybomb', 1)
-    TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['weapon_stickybomb'], "remove")
-end)
-
-RegisterNetEvent('gifgat:server:Reward', function(cashProp)
+RegisterNetEvent('gifgat:server:Reward', function(cashProp, cash)
     local src = source
     local ply = QBCore.Functions.GetPlayer(src)
     local info = {
