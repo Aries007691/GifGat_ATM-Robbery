@@ -1,26 +1,3 @@
-
-local QBCore = exports['qb-core']:GetCoreObject()
-local cash = {}
-
-QBCore.Functions.CreateCallback('gifgat:server:checkcops', function(source, cb, data)
-    local amount = 0
-    for _, v in pairs(QBCore.Functions.GetQBPlayers()) do
-Expand
-server.lua
-3 KB
-local QBCore = exports['qb-core']:GetCoreObject()
-local cooldown = false
-local CurrentCops = 0
-
-local atmtargets = Config.atmTargets
-
-Expand
-client.lua
-8 KB
-gifgat — Today at 22:58
-awe
-random guy sent me that
-﻿
 local QBCore = exports['qb-core']:GetCoreObject()
 local cooldown = false
 local CurrentCops = 0
@@ -33,7 +10,7 @@ exports['qb-target']:AddTargetModel(atmtargets, {
         {
             action = function()
                 QBCore.Functions.TriggerCallback('gifgat:weapon_stickybomb', function(HasItem)
-                    if HasItem and not cooldown then
+                    if HasItem then
                         QBCore.Functions.TriggerCallback('gifgat:server:checkcops', function(amount)
                             CurrentCops = amount
                         end)
@@ -45,13 +22,9 @@ exports['qb-target']:AddTargetModel(atmtargets, {
                             return
                         end
                         TriggerEvent('gifgat:startrobbery')
-                        TriggerServerEvent('gifgat:RemoveBombItem')
-                        exports['ps-dispatch']:ATMRobbery() --TriggerServerEvent('police:server:policeAlert', 'ATM Bombing in progress')
-                        cooldown = true
-                    elseif cooldown == true then
-                        TriggerEvent('gifgat:CooldownNotify')
-                    elseif not HasItem then
-                        QBCore.Functions.Notify("You Dont Have The Equipment Needed")                        
+                        TriggerServerEvent('police:server:policeAlert', 'ATM Bombing in progress')
+                    else
+                        QBCore.Functions.Notify("You Dont Have The Equipment Needed")
                     end
                 end)
             end,
@@ -170,8 +143,14 @@ RegisterNetEvent('gifgat:client:cash', function(coords)
     end
 
 
-    local coords = GetOffsetFromEntityInWorldCoords(atm, 0.0, -1.0, 0.0)
-    local cash   = GetHashKey('prop_cash_pile_02')
+    local coords =
+    GetOffsetFromEntityInWorldCoords(
+        atm,
+        0.0,
+        -1.0,
+        0.0
+    )
+    local cash   = GetHashKey('prop_anim_cash_pile_01')
     RequestModel(cash)
     while not cash do
         wait(10)
@@ -218,8 +197,8 @@ RegisterNetEvent('gifgat:client:cash', function(coords)
                         end
                         TaskPlayAnim(PlayerPedId(), anim, play, 8.0, 8.0, -1, 32, 0.2, 0, 0, 0)
                         Wait(1000)
-                        TriggerServerEvent('gifgat:server:Reward', cashProp)
                         DeleteEntity(cashProp)
+                        TriggerServerEvent('gifgat:server:Reward', cashProp, cash)
                     end,
                 }
             },
@@ -234,5 +213,3 @@ RegisterNetEvent('gifgat:CooldownNotify')
 AddEventHandler('gifgat:CooldownNotify', function()
     TriggerEvent("QBCore:Notify", "An ATM Bombing has happened Recently.")
 end)
-client.lua
-8 KB
