@@ -197,8 +197,10 @@ RegisterNetEvent('gifgat:client:cash', function(coords)
                         end
                         TaskPlayAnim(PlayerPedId(), anim, play, 8.0, 8.0, -1, 32, 0.2, 0, 0, 0)
                         Wait(1000)
-                        DeleteEntity(cashProp)
                         TriggerServerEvent('gifgat:server:Reward', cashProp, cash)
+                        if DoesEntityExist(cashProp) then
+                            DeleteEntity(cashProp)
+                        end
                     end,
                 }
             },
